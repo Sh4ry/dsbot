@@ -1,29 +1,37 @@
 import discord
+from discord.ext import commands
 from genpass import gen_pass
 
 intents = discord.Intents.default()
 intents.message_content = True
-client = discord.Client(intents=intents)
 
+bot = commands.Bot(command_prefix='$', intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f"Abbiamo effettuato l'accesso come {client.user}")
+    print(f"Hai fatto l\'accesso come {bot.user}")
 
+@bot.command()
+async def ciao(ctx):
+    await ctx.send(f'Ciao! Sono un bot {bot.user}!')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-    if message.content.startswith('$hello'):
-        await message.channel.send('Ciao! Sono un bot!')
-    elif message.content.startswith('$password'):
-        num = message.content[10:]
-        try:
-            num = int(num)
-        except: await message.channel.send("Errore di formattazione! Devi inserire $password num")
-        await message.channel.send(gen_pass(num))
-    else:
-        await message.channel.send("Non è possibile elaborare questo comando, mi dispiace!")
+@bot.command()
+async def password(ctx, num = 10):
+    await ctx.send(gen_pass(num))
 
-client.run("nf ikjdsbn")
+@bot.command()
+async def repeat(ctx, times: int, content='repeating...'):
+    """Repeats a message multiple times."""
+    for i in range(times):
+        await ctx.send(content)
+        
+@bot.command()
+async def purge(ctx, num: int):
+    await ctx.channel.purge(limit=num)
+    await ctx.send("")
+
+@bot.command()
+async def heh(ctx, count_heh = 5):
+    await ctx.send("he" * count_heh)
+
+bot.run("fdsfsdfsd")
